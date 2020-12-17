@@ -1,47 +1,47 @@
-import numpy
+import numpy as np
 from scipy import linalg
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
 
-pyplot.rcParams['font.family'] = 'serif'
-pyplot.rcParams['font.size'] = 11
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.size'] = 11
 nx = 41  # number of spatial discrete points
 L = 2.0  # length of the domain
 dx = L / (nx - 1)  # spatial grid size
 nt = 10  # number of time steps
 
 # Define the grid point coordinates.
-x = numpy.linspace(0.0, L, num=nx)
-u0 = numpy.ones(nx) # base initial condition with u=1
+x = np.linspace(0.0, L, num=nx)
+u0 = np.ones(nx) # base initial condition with u=1
 # Get a list of indices where 0.5 >0 where u=2 as initial condition.
-mask = numpy.where(x > 0.5)
-u0[mask] = 2.0 
+mask = np.where(x > 0.5)
+u0[mask] = 2.0
 
 # plot of initial condition
-pyplot.figure(figsize=(6.0, 4.0))
-pyplot.title('Initial conditions')
-pyplot.xlabel('x')
-pyplot.ylabel('u')
-pyplot.grid()
-pyplot.plot(x, u0, color='C0', linestyle='-', linewidth=2)
-pyplot.xlim(0.0, L)
-pyplot.ylim(0.0, 2.1)
+plt.figure(figsize=(6.0, 4.0))
+plt.title('Initial conditions')
+plt.xlabel('x')
+plt.ylabel('u')
+plt.grid()
+plt.plot(x, u0, color='C0', linestyle='-', linewidth=2)
+plt.xlim(0.0, L)
+plt.ylim(0.0, 2.1)
 
 # setting the coefficent matrix operator A
 def lhs_operator(N, r):
     # Setup the diagonal of the operator.
-    D = numpy.diag(1.0 * numpy.ones(N))
+    D = np.diag(1.0 * np.ones(N))
     # Setup the Neumann condition for the last element.
     D[-1, -1] = 1.0 + r / 2.0  # r = Courant number
     # upper diagonal of the operator.
-    U = numpy.diag((r / 2) * numpy.ones(N - 1), k=1)
+    U = np.diag((r / 2) * np.ones(N - 1), k=1)
     # lower diagonal of the operator.
-    L = numpy.diag((-1.0 * r / 2.0) * numpy.ones(N - 1), k=-1)
+    L = np.diag((-1.0 * r / 2.0) * np.ones(N - 1), k=-1)
     # the final coeff matrix A
     A = D + U + L
     return A
 # setting the LHS vector with boundary conditions
 def rhs_vector(u, r, qdx):
-    b = u[1:-1] 
+    b = u[1:-1]
     # Set Dirichlet condition.
     b[0] += u[0] * ( r / 2.0)
     # Set Neumann condition.
@@ -73,14 +73,14 @@ dt = r * dx / C # time-step size based of r, C and dx
 u = btcs_implicit(u0, nt, dt, dx, C, q)
 
 # Plot of wave profile along the domain at final time step.
-pyplot.figure(figsize=(6.0, 4.0))
-pyplot.title('Wave profile at time step-10')
-pyplot.xlabel('x')
-pyplot.ylabel('u')
-pyplot.grid()
-pyplot.plot(x, u, color='C1', linestyle='-', linewidth=2)
-pyplot.xlim(0.0, L)
-pyplot.ylim(0.0, 2);
+plt.figure(figsize=(6.0, 4.0))
+plt.title('Wave profile at time step-10')
+plt.xlabel('x')
+plt.ylabel('u')
+plt.grid()
+plt.plot(x, u, color='C1', linestyle='-', linewidth=2)
+plt.xlim(0.0, L)
+plt.ylim(0.0, 2);
 
 # calculating the analytical solution, u_an
 t10 = 1 # time in seconds at tenth time step
@@ -93,22 +93,22 @@ for i in range(len(x)):
     u_an.append(2)
 
 # plot of analytical solution
-pyplot.figure(figsize=(6.0, 4.0))
-pyplot.title('analytical solution')
-pyplot.xlabel('x')
-pyplot.ylabel('u_an')
-pyplot.grid()
-pyplot.plot(x, u_an, color='C4', linestyle='-', linewidth=2)
-pyplot.xlim(0.0, L)
-pyplot.ylim(0, 2.1)    
+plt.figure(figsize=(6.0, 4.0))
+plt.title('analytical solution')
+plt.xlabel('x')
+plt.ylabel('u_an')
+plt.grid()
+plt.plot(x, u_an, color='C4', linestyle='-', linewidth=2)
+plt.xlim(0.0, L)
+plt.ylim(0, 2.1)
 
 # plot of L1 norm
 norm = u_an - u
-pyplot.figure(figsize=(6.0, 4.0))
-pyplot.title('L1 norm')
-pyplot.xlabel('x')
-pyplot.ylabel('L1')
-pyplot.grid()
-pyplot.plot(x, norm, color='C2', linestyle='-', linewidth=2)
-pyplot.xlim(0.0, L)
-pyplot.ylim(0, 0.5)
+plt.figure(figsize=(6.0, 4.0))
+plt.title('L1 norm')
+plt.xlabel('x')
+plt.ylabel('L1')
+plt.grid()
+plt.plot(x, norm, color='C2', linestyle='-', linewidth=2)
+plt.xlim(0.0, L)
+plt.ylim(0, 0.5)
